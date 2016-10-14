@@ -1,0 +1,20 @@
+{
+  "name": "wxa-predefined",
+  "version": "0.0.2",
+  "description": "Predefined of Weixin Application API",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/nilennoct/wxa-predefined.git"
+  },
+  "keywords": [
+    "Weixin",
+    "predefined",
+    "API"
+  ],
+  "author": "nilennoct",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nilennoct/wxa-predefined/issues"
+  },
+  "homepage": "https://github.com/nilennoct/wxa-predefined#readme"
+}
