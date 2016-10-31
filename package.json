@@ -1,6 +1,6 @@
 {
   "name": "wxa-predefined",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Predefined of Weixin Application API",
   "repository": {
     "type": "git",

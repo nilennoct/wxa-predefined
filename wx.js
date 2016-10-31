@@ -81,7 +81,7 @@ const wx = {
     /**
      * 通过 WebSocket 连接发送数据
      * @param {Object} options
-     * @param {string} options.data - 需要发送的内容
+     * @param {string|ArrayBuffer} options.data - 需要发送的内容
      * @param {function} [options.success] - 接口调用成功的回调函数
      * @param {function} [options.fail] - 接口调用失败的回调函数
      * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
@@ -96,7 +96,7 @@ const wx = {
     /**
      * @callback onSocketMessage~callback
      * @param {Object} res
-     * @param {string} res.data
+     * @param {string|ArrayBuffer} res.data
      */
 
     /**
@@ -137,6 +137,22 @@ const wx = {
      * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
      */
     previewImage(options) {},
+
+    /**
+     * 获取图片信息
+     * @param {Object} options
+     * @param {string} options.src - 图片的路径，可以是相对路径，临时文件路径，存储文件路径
+     * @param {getImageInfo~success} [options.success] - 接口调用成功的回调函数
+     * @param {function} [options.fail] - 接口调用失败的回调函数
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    getImageInfo(options) {},
+    /**
+     * @callback getImageInfo~success
+     * @param {Object} res
+     * @param {number} res.width - 图片宽度，单位px
+     * @param {number} res.height - 图片高度，单位px
+     */
 
     /**
      * 开始录音
@@ -256,6 +272,64 @@ const wx = {
      */
 
     /**
+     * 获取本地已保存的文件列表
+     * @param {Object} options
+     * @param {getSavedFileList~success} [options.success] - 接口调用成功的回调函数
+     * @param {function} [options.fail] - 接口调用失败的回调函数
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    getSavedFileList(options) {},
+    /**
+     * @typedef {Object} SavedFile
+     * @property {string} filePath - 文件的本地路径
+     * @property {number} createTime - 文件的保存时的时间戳，从1970/01/01 08:00:00 到当前时间的秒数
+     * @property {number} size - 文件大小，单位B
+     */
+    /**
+     * @callback getSavedFileList~success
+     * @param {Object} res
+     * @param {string} res.errMsg - 接口调用结果
+     * @param {Array.<SavedFile>} res.fileList - 文件列表
+     */
+
+    /**
+     * 获取本地文件的文件信息
+     * @param {Object} options
+     * @param {string} options.filePath - 文件路径
+     * @param {getSavedFileInfo~success} [options.success] - 接口调用成功的回调函数，返回结果见success返回参数说明
+     * @param {function} [options.fail] - 接口调用失败的回调函数
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    getSavedFileInfo(options) {},
+    /**
+     * @callback getSavedFileInfo~success
+     * @param {Object} res
+     * @param {string} res.errMsg - 接口调用结果
+     * @param {number} res.size - 文件大小，单位B
+     * @param {number} res.createTime - 文件的保存是的时间戳，从1970/01/01 08:00:00 到当前时间的秒数
+     */
+
+    /**
+     * 删除本地存储的文件
+     * @param {Object} options
+     * @param {string} options.filePath - 需要删除的文件路径
+     * @param {function} [options.success] - 接口调用成功的回调函数
+     * @param {function} [options.fail] - 接口调用失败的回调函数
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    removeSavedFile(options) {},
+
+    /**
+     * 新开页面打开文档，支持格式：doc, xls, ppt, pdf, docx, xlsx, pptx
+     * @param {Object} options
+     * @param {string} options.filePath - 文件路径，可通过 downFile 获得
+     * @param {function} [options.success] - 接口调用成功的回调函数
+     * @param {function} [options.fail] - 接口调用失败的回调函数
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    openDocument(options) {},
+
+    /**
      * 拍摄视频或从手机相册中选视频，返回视频的临时文件路径
      * @param {Object} options
      * @param {Array.<string>} [options.sourceType=['album', 'camera']] - album 从相册选视频，camera 使用相机拍摄，默认为：['album', 'camera']
@@ -275,6 +349,13 @@ const wx = {
      * @param {number} res.height - 返回选定视频的长
      * @param {number} res.width - 返回选定视频的宽
      */
+
+    /**
+     * 创建并返回 audio 上下文 AudioContext 对象
+     * @param {string} audioId - 通过 audioId 跟一个 audio 组件绑定，通过它可以操作一个 audio 组件
+     * @return {AudioContext}
+     */
+    createAudioContext(audioId) {},
 
     /**
      * 将数据存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个异步接口
@@ -317,6 +398,48 @@ const wx = {
     getStorageSync(key) {},
 
     /**
+     * @typedef {Object} StorageInfo
+     * @property {Array.<string>} keys - 当前storage中所有的key
+     * @property {number} currentSize - 当前占用的空间大小, 单位kb
+     * @property {number} limitSize - 限制的空间大小，单位kb
+     */
+
+    /**
+     * 异步获取当前storage的相关信息
+     * @param {Object} options
+     * @param {getStorageInfo~success} options.success - 接口调用的回调函数
+     * @param {function} [options.fail] - 接口调用失败的回调函数
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    getStorageInfo(options) {},
+    /**
+     * @callback getStorageInfo~success
+     * @param {StorageInfo} res
+     */
+
+    /**
+     * 同步获取当前storage的相关信息
+     * @return {StorageInfo}
+     */
+    getStorageInfoSync() {},
+
+    /**
+     * 从本地缓存中异步移除指定 key
+     * @param {Object} options
+     * @param {string} options.key - 本地缓存中的指定的 key
+     * @param {function} [options.success] - 接口调用成功的回调函数
+     * @param {function} [options.fail] - 接口调用失败的回调函数
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    removeStorage(options) {},
+
+    /**
+     * 从本地缓存中同步移除指定 key
+     * @param {string} key
+     */
+    removeStorageSync(key) {},
+
+    /**
      * 清理本地数据缓存
      */
     clearStorage() {},
@@ -342,6 +465,24 @@ const wx = {
      * @param {number} res.longitude - 经度，浮点数，范围为-180~180，负数表示西经
      * @param {number} res.speed - 速度，浮点数，单位m/s
      * @param {number} res.accuracy - 位置的精确度
+     */
+
+    /**
+     * 打开地图选择位置
+     * @param {Object} options
+     * @param {chooseLocation~success} res.success - 接口调用成功的回调函数，返回内容详见返回参数说明。
+     * @param {function} [res.cancel] - 用户取消时调用
+     * @param {function} [res.fail] - 接口调用失败的回调函数
+     * @param {function} [res.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    chooseLocation(options) {},
+    /**
+     * @callback chooseLocation~success
+     * @param {Object} res
+     * @param {string} res.name - 位置名称
+     * @param {string} res.address - 详细地址
+     * @param {number} res.latitude - 纬度，浮点数，范围为-90~90，负数表示南纬
+     * @param {number} res.longitude - 经度，浮点数，范围为-180~180，负数表示西经
      */
 
     /**
@@ -405,6 +546,35 @@ const wx = {
      */
 
     /**
+     * @typedef {Object} SystemInfo
+     * @property {string} model - 手机型号
+     * @property {number} pixelRatio - 设备像素比
+     * @property {number} windowWidth - 窗口宽度
+     * @property {number} windowHeight - 窗口高度
+     * @property {string} language - 微信设置的语言
+     * @property {string} version - 微信版本号
+     */
+
+    /**
+     * 获取系统信息
+     * @param {Object} options
+     * @param {function} [options.success] - 接口调用成功的回调函数
+     * @param {function} [options.fail] - 接口调用失败的回调函数
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    getSystemInfo(options) {},
+    /**
+     * @callback getSystemInfo~success
+     * @param {SystemInfo} res
+     */
+
+    /**
+     * 获取系统信息同步接口
+     * @return {SystemInfo}
+     */
+    getSystemInfoSync() {},
+
+    /**
      * 监听罗盘数据，频率：5次/秒
      * @param {onCompassChange~callback} callback
      */
@@ -413,6 +583,71 @@ const wx = {
      * @callback onCompassChange~callback
      * @param {Object} res
      * @param {number} res.direction - 面对的方向度数
+     */
+
+    /**
+     * 拨打电话号码
+     * @param {Object} options
+     * @param {string} options.phoneNumber - 需要拨打的电话号码
+     * @param {function} [options.success] - 接口调用成功的回调
+     * @param {function} [options.fail] - 接口调用失败的回调函数
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    makePhoneCall(options) {},
+
+    /**
+     * 显示消息提示框
+     * @param {Object} options
+     * @param {string} options.title - 提示的内容
+     * @param {string} [options.icon] - 图标，只支持"success"、"loading"
+     * @param {number} [options.duration] - 提示的延迟时间，单位毫秒，默认：1500, 最大为10000
+     * @param {function} [options.success] - 接口调用成功的回调函数
+     * @param {function} [options.fail] - 接口调用失败的回调函数
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    showToast(options) {},
+
+    /**
+     * 隐藏消息提示框
+     */
+    hideToast() {},
+
+    /**
+     * ​显示模态弹窗
+     * @param {Object} options
+     * @param {string} options.title - 提示的标题
+     * @param {string} options.content - 提示的内容
+     * @param {boolean} [options.showCancel=true] - 是否显示取消按钮，默认为 true
+     * @param {string} [options.cancelText="取消"] - 取消按钮的文字，默认为"取消"
+     * @param {string} [options.cancelColor="#000000"] - 取消按钮的文字颜色，默认为"#000000"
+     * @param {string} [options.confirmText="确定"] - 确定按钮的文字，默认为"确定"
+     * @param {string} [options.confirmColor="#3CC51F"] - 确定按钮的文字颜色，默认为"#3CC51F"
+     * @param {showModal~success} [options.success] - 接口调用成功的回调函数，返回res.confirm==1时，表示用户点击确定按钮
+     * @param {function} [options.fail] - 接口调用失败的回调函数
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    showModal(options) {},
+    /**
+     * @callback showModal~success
+     * @param {Object} res
+     * @param {number} res.confirm - 等于1时，表示用户点击确定按钮
+     */
+
+    /**
+     * 显示操作菜单
+     * @param {Object} options
+     * @param {Array.<string>} res.itemList - 按钮的文字数组，数组长度最大为10个
+     * @param {string} [res.itemColor="#000000"] - 按钮的文字颜色，默认为"#000000"
+     * @param {showActionSheet~success} [res.success] - 接口调用成功的回调函数，详见返回参数说明
+     * @param {function} [res.fail] - 接口调用失败的回调函数
+     * @param {function} [res.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    showActionSheet(options) {},
+    /**
+     * @callback showActionSheet~success
+     * @param {Object} res
+     * @param {boolean} res.cancel - 用户是否取消选择
+     * @param {number} res.tapIndex - 用户点击的按钮，从上到下的顺序，从0开始
      */
 
     /**
@@ -457,8 +692,10 @@ const wx = {
 
     /**
      * 关闭当前页面，回退前一页面
+     * @param {Object} options
+     * @param {number} [options.delta=1] - 返回的页面数，如果 delta 大于现有页面数，则返回到首页
      */
-    navigateBack() {},
+    navigateBack(options) {},
 
     /**
      * @typedef {Object} AnimationOption
@@ -489,6 +726,14 @@ const wx = {
     drawCanvas(options) {},
 
     /**
+     * 把当前画布的内容导出生成图片，并返回文件路径
+     * @param {Object} options
+     * @param {string} options.canvasId - 画布标识，传入 <canvas/> 的 cavas-id
+     * @return {string}
+     */
+    canvasToTempFilePath(options) {},
+
+    /**
      * 收起键盘
      */
     hideKeyboard() {},
@@ -512,6 +757,15 @@ const wx = {
      * @param {string} res.errMsg - 调用结果
      * @param {string} res.code - 登录凭证
      */
+
+    /**
+     * 检查登陆态是否过期
+     * @param {Object} options
+     * @param {function} [options.success] - 接口调用成功的回调函数，登陆态未过期
+     * @param {function} [options.fail] - 接口调用失败的回调函数，登陆态已过期
+     * @param {function} [options.complete] - 接口调用结束的回调函数（调用成功、失败都会执行）
+     */
+    checkSession(options) {},
 
     /**
      * 获取用户信息
@@ -715,6 +969,24 @@ Animation.prototype.step = function (options) {};
  * @return {Object}
  */
 Animation.prototype.export = function () {};
+
+/**
+ * @constructor
+ */
+function AudioContext() {}
+/**
+ * 播放
+ */
+AudioContext.prototype.play = function () {}
+/**
+ * 暂停
+ */
+AudioContext.prototype.pause = function () {}
+/**
+ * 跳转到指定位置
+ * @param {number} position - 指定位置，单位 s
+ */
+AudioContext.prototype.seek = function (position) {}
 
 /**
  * @constructor
